@@ -4,6 +4,7 @@ import '../../transactions/screens/transactions_list_screen.dart';
 import '../../transactions/screens/add_transaction_screen.dart';
 import '../../analytics/screens/analytics_screen.dart';
 import '../../settings/screens/settings_screen.dart';
+import '../../receipt/screens/receipt_entry_choice_screen.dart';
 import '../../../core/theme/app_colors.dart';
 
 class MainScreen extends StatefulWidget {
@@ -117,7 +118,7 @@ class _MainScreenState extends State<MainScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const AddTransactionScreen(),
+              builder: (context) => const ReceiptEntryChoiceScreen(),
             ),
           );
         },
