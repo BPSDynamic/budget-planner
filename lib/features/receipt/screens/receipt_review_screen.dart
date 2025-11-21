@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:budget_planner/core/theme/app_colors.dart';
 import 'package:budget_planner/features/transactions/models/transaction_model.dart';
 import 'package:budget_planner/features/transactions/providers/budget_provider.dart';
+import 'package:budget_planner/features/settings/providers/settings_provider.dart';
 
 class ReceiptReviewScreen extends StatefulWidget {
   final Map<String, dynamic> extractedData;
@@ -158,7 +159,7 @@ class _ReceiptReviewScreenState extends State<ReceiptReviewScreen> {
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   decoration: InputDecoration(
                     labelText: 'Amount',
-                    prefixText: '${budgetProvider.currency} ',
+                    prefixText: '${context.read<SettingsProvider>().currency} ',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),

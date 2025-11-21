@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import '../../transactions/screens/transactions_list_screen.dart';
-import '../../transactions/screens/add_transaction_screen.dart';
 import '../../analytics/screens/analytics_screen.dart';
 import '../../settings/screens/settings_screen.dart';
 import '../../receipt/screens/receipt_entry_choice_screen.dart';

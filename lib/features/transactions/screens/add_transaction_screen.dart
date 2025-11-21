@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'category_selection_screen.dart';
 import '../../transactions/models/transaction_model.dart';
 import '../../transactions/providers/budget_provider.dart';
+import '../../settings/providers/settings_provider.dart';
 import '../../../core/theme/app_colors.dart';
 
 class AddTransactionScreen extends StatefulWidget {
@@ -57,51 +58,159 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Type Selection
-              SegmentedButton<TransactionType>(
-                segments: const [
-                  ButtonSegment(
-                    value: TransactionType.expense,
-                    label: Text('Expense'),
-                    icon: Icon(Icons.arrow_upward),
+              // Type Selection - Toggle Buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            _type = TransactionType.expense;
+                            _category = 'Food';
+                          });
+                        },
+                        borderRadius: BorderRadius.circular(24),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _type == TransactionType.expense
+                                ? Colors.white
+                                : Colors.grey.shade100,
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(
+                              color: _type == TransactionType.expense
+                                  ? Colors.grey.shade300
+                                  : Colors.transparent,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if (_type == TransactionType.expense)
+                                const Icon(
+                                  Icons.check_circle,
+                                  color: AppColors.primary,
+                                  size: 20,
+                                )
+                              else
+                                const SizedBox(width: 20),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Expense',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: _type == TransactionType.expense
+                                      ? AppColors.textLight
+                                      : Colors.grey.shade600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                  ButtonSegment(
-                    value: TransactionType.income,
-                    label: Text('Income'),
-                    icon: Icon(Icons.arrow_downward),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            _type = TransactionType.income;
+                            _category = 'Salary';
+                          });
+                        },
+                        borderRadius: BorderRadius.circular(24),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _type == TransactionType.income
+                                ? Colors.white
+                                : Colors.grey.shade100,
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(
+                              color: _type == TransactionType.income
+                                  ? Colors.grey.shade300
+                                  : Colors.transparent,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if (_type == TransactionType.income)
+                                const Icon(
+                                  Icons.check_circle,
+                                  color: AppColors.primary,
+                                  size: 20,
+                                )
+                              else
+                                const SizedBox(width: 20),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Income',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: _type == TransactionType.income
+                                      ? AppColors.textLight
+                                      : Colors.grey.shade600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
-                selected: {_type},
-                onSelectionChanged: (Set<TransactionType> newSelection) {
-                  setState(() {
-                    _type = newSelection.first;
-                  });
-                },
-                style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.resolveWith<Color>(
-                    (Set<WidgetState> states) {
-                      if (states.contains(WidgetState.selected)) {
-                        return _type == TransactionType.expense
-                            ? AppColors.error.withValues(alpha: 0.2)
-                            : AppColors.success.withValues(alpha: 0.2);
-                      }
-                      return Colors.transparent;
-                    },
-                  ),
-                ),
               ),
               const SizedBox(height: 24),
 
               // Amount
-              Consumer<BudgetProvider>(
-                builder: (context, budgetProvider, _) {
-                  return TextFormField(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Amount',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.w500,
+                        ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextFormField(
                     controller: _amountController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     decoration: InputDecoration(
-                      labelText: 'Amount',
-                      prefixText: '${budgetProvider.currency} ',
-                      border: const OutlineInputBorder(),
+                      hintText: '0.00',
+                      prefixText: '${context.read<SettingsProvider>().currency} ',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey.shade300),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey.shade300),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: AppColors.primary,
+                          width: 2,
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey.shade50,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -112,83 +221,231 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       }
                       return null;
                     },
-                  );
-                },
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
 
               // Title
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Title',
-                  hintText: 'e.g., Groceries',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a title';
-                  }
-                  return null;
-                },
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Title',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.w500,
+                        ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _titleController,
+                    decoration: InputDecoration(
+                      hintText: 'Enter description',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey.shade300),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey.shade300),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: AppColors.primary,
+                          width: 2,
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey.shade50,
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a title';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
 
               // Category
-              InkWell(
-                onTap: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CategorySelectionScreen(),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Category',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.w500,
+                        ),
+                  ),
+                  const SizedBox(height: 8),
+                  if (_type == TransactionType.income)
+                    // Income Categories Dropdown
+                    DropdownButtonFormField<String>(
+                      value: _category,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: AppColors.primary,
+                            width: 2,
+                          ),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey.shade50,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                      ),
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'Salary',
+                          child: Text('Salary'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Freelance',
+                          child: Text('Freelance'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Side Hustle',
+                          child: Text('Side Hustle'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Stock',
+                          child: Text('Stock'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Dividend',
+                          child: Text('Dividend'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Other',
+                          child: Text('Other'),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            _category = value;
+                          });
+                        }
+                      },
+                    )
+                  else
+                    // Expense Categories - Navigation
+                    InkWell(
+                      onTap: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const CategorySelectionScreen(),
+                          ),
+                        );
+                        if (result != null) {
+                          setState(() {
+                            _category = result;
+                          });
+                        }
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(12),
+                          color: Colors.grey.shade50,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              _category,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              size: 16,
+                              color: Colors.grey.shade400,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  );
-                  if (result != null) {
-                    setState(() {
-                      _category = result;
-                    });
-                  }
-                },
-                child: InputDecorator(
-                  decoration: const InputDecoration(
-                    labelText: 'Category',
-                    border: OutlineInputBorder(),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(_category),
-                      const Icon(Icons.arrow_forward_ios, size: 16),
-                    ],
-                  ),
-                ),
+                ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
 
               // Date
-              ListTile(
-                title: const Text('Date'),
-                subtitle: Text(
-                  '${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}',
-                ),
-                trailing: const Icon(Icons.calendar_today),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4),
-                  side: BorderSide(color: Colors.grey.shade400),
-                ),
-                onTap: () async {
-                  final DateTime? picked = await showDatePicker(
-                    context: context,
-                    initialDate: _selectedDate,
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime(2100),
-                  );
-                  if (picked != null && picked != _selectedDate) {
-                    setState(() {
-                      _selectedDate = picked;
-                    });
-                  }
-                },
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Date',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.w500,
+                        ),
+                  ),
+                  const SizedBox(height: 8),
+                  InkWell(
+                    onTap: () async {
+                      final DateTime? picked = await showDatePicker(
+                        context: context,
+                        initialDate: _selectedDate,
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100),
+                      );
+                      if (picked != null && picked != _selectedDate) {
+                        setState(() {
+                          _selectedDate = picked;
+                        });
+                      }
+                    },
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.grey.shade50,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}-${_selectedDate.day.toString().padLeft(2, '0')}',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          Icon(
+                            Icons.calendar_today,
+                            size: 20,
+                            color: Colors.grey.shade400,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 32),
 

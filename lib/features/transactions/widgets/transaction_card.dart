@@ -2,16 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../models/transaction_model.dart';
-import '../providers/budget_provider.dart';
+import '../../settings/providers/settings_provider.dart';
 import '../../../core/theme/app_colors.dart';
 
 class TransactionCard extends StatelessWidget {
   final Transaction transaction;
+  final String? currency;
   final VoidCallback? onTap;
 
   const TransactionCard({
     super.key,
     required this.transaction,
+    this.currency,
     this.onTap,
   });
 
@@ -43,17 +45,18 @@ class TransactionCard extends StatelessWidget {
           DateFormat.yMMMd().format(transaction.date),
           style: Theme.of(context).textTheme.bodySmall,
         ),
-        trailing: Consumer<BudgetProvider>(
-        builder: (context, provider, child) {
-          return Text(
-            '${isIncome ? '+' : '-'} ${provider.currency}${transaction.amount.toStringAsFixed(2)}',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: isIncome ? AppColors.success : AppColors.error,
-                  fontWeight: FontWeight.bold,
-                ),
-          );
-        },
-      ),
+        trailing: Consumer<SettingsProvider>(
+          builder: (context, settingsProvider, child) {
+            final displayCurrency = currency ?? settingsProvider.currency;
+            return Text(
+              '${isIncome ? '+' : '-'} $displayCurrency${transaction.amount.toStringAsFixed(2)}',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: isIncome ? AppColors.success : AppColors.error,
+                    fontWeight: FontWeight.bold,
+                  ),
+            );
+          },
+        ),
       ),
     );
   }

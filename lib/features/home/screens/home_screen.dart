@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../transactions/providers/budget_provider.dart';
+import '../../settings/providers/settings_provider.dart';
 import '../../transactions/widgets/transaction_card.dart';
 import '../../../core/theme/app_colors.dart';
 
@@ -12,8 +13,9 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Consumer<BudgetProvider>(
-          builder: (context, provider, child) {
+        child: Consumer2<BudgetProvider, SettingsProvider>(
+          builder: (context, provider, settingsProvider, child) {
+            final currency = settingsProvider.currency;
             return Column(
               children: [
                 // Header Section
@@ -67,7 +69,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '${provider.currency}${provider.totalExpense.toStringAsFixed(2)}',
+                      '$currency${provider.totalExpense.toStringAsFixed(2)}',
                       style: Theme.of(context).textTheme.displaySmall?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: AppColors.textLight,
@@ -142,7 +144,7 @@ class HomeScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                '${provider.currency}${provider.balance.toStringAsFixed(2)}',
+                                '$currency${provider.balance.toStringAsFixed(2)}',
                                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                       fontWeight: FontWeight.bold,
                                       color: AppColors.success,
@@ -186,7 +188,7 @@ class HomeScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                '${provider.currency}${provider.totalExpense.toStringAsFixed(2)}',
+                                '$currency${provider.totalExpense.toStringAsFixed(2)}',
                                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                       fontWeight: FontWeight.bold,
                                       color: AppColors.error,
@@ -239,7 +241,7 @@ class HomeScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              '${provider.currency}${provider.totalIncome.toStringAsFixed(2)}',
+                              '$currency${provider.totalIncome.toStringAsFixed(2)}',
                               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: AppColors.primary,

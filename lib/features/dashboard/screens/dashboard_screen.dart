@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../transactions/providers/budget_provider.dart';
 import '../../transactions/widgets/transaction_card.dart';
 import '../../transactions/screens/add_transaction_screen.dart';
+import '../../settings/providers/settings_provider.dart';
 import '../widgets/balance_card.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -20,16 +21,17 @@ class DashboardScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Consumer<BudgetProvider>(
-        builder: (context, provider, child) {
+      body: Consumer2<BudgetProvider, SettingsProvider>(
+        builder: (context, budgetProvider, settingsProvider, child) {
+          final currency = settingsProvider.currency;
           return CustomScrollView(
             slivers: [
               SliverToBoxAdapter(
                 child: BalanceCard(
-                  balance: provider.balance,
-                  income: provider.totalIncome,
-                  expense: provider.totalExpense,
-                  currency: provider.currency,
+                  balance: budgetProvider.balance,
+                  income: budgetProvider.totalIncome,
+                  expense: budgetProvider.totalExpense,
+                  currency: currency,
                 ),
               ),
               SliverPadding(
@@ -43,7 +45,7 @@ class DashboardScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              if (provider.transactions.isEmpty)
+              if (budgetProvider.transactions.isEmpty)
                 SliverFillRemaining(
                   child: Center(
                     child: Column(
@@ -69,15 +71,16 @@ class DashboardScreen extends StatelessWidget {
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                      final transaction = provider.transactions[index];
+                      final transaction = budgetProvider.transactions[index];
                       return TransactionCard(
                         transaction: transaction,
+                        currency: currency,
                         onTap: () {
                           // TODO: Show details or edit
                         },
                       );
                     },
-                    childCount: provider.transactions.length,
+                    childCount: budgetProvider.transactions.length,
                   ),
                 ),
             ],

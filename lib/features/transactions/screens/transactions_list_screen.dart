@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:budget_planner/features/transactions/models/transaction_model.dart';
 import 'package:budget_planner/features/transactions/providers/budget_provider.dart';
+import 'package:budget_planner/features/settings/providers/settings_provider.dart';
 import 'package:budget_planner/core/theme/app_colors.dart';
 import 'add_transaction_screen.dart';
 
@@ -126,8 +127,9 @@ class _TransactionsListScreenState extends State<TransactionsListScreen> {
           ),
           // Transactions list
           Expanded(
-            child: Consumer<BudgetProvider>(
-              builder: (context, budgetProvider, _) {
+            child: Consumer2<BudgetProvider, SettingsProvider>(
+              builder: (context, budgetProvider, settingsProvider, _) {
+                final currency = settingsProvider.currency;
                 final filteredTransactions =
                     _getFilteredTransactions(budgetProvider.transactions);
 
@@ -209,7 +211,7 @@ class _TransactionsListScreenState extends State<TransactionsListScreen> {
                           ],
                         ),
                         trailing: Text(
-                          '${isExpense ? '-' : '+'}${budgetProvider.currency}${transaction.amount.toStringAsFixed(2)}',
+                          '${isExpense ? '-' : '+'}$currency${transaction.amount.toStringAsFixed(2)}',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
